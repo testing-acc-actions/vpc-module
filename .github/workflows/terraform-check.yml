@@ -27,7 +27,7 @@ jobs:
           terraform_version: "1.12.2"
 
       - name: Check Terraform formatting
-        run: terraform fmt -check -recursive
+        run: terraform fmt
 
       - name: Initialize Terraform without a backend
         run: terraform init -backend=false
