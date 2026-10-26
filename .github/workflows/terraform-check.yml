@@ -30,7 +30,7 @@ jobs:
         run: terraform fmt
 
       - name: Initialize Terraform without a backend
-        run: terraform init -backend=false
+        run: terraform init
 
       - name: Validate Terraform configuration
         run: terraform validate
