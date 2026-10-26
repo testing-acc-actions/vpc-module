@@ -1,3 +1,11 @@
+resource "aws_s3_bucket" "traform_main"{
+bucket= "tf-website-learner-16e6b602c04c23b0e55d892e6f"
+}
+
+backend "s3"{
+bucket="tf-website-learner-16e6b602c04c23b0e55d892e6f"
+key="main/terraform.tfstate"
+}
 
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
