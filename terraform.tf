@@ -9,6 +9,6 @@ terraform {
 
 provider "aws" {
   region  = "ap-south-1"
-  profile = "terraform-learner"
+  profile = "terraform-vpc"
 }
 
