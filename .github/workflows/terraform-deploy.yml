@@ -47,6 +47,15 @@ jobs:
       - name: Create readable report
         run: terraform show 
 
+      - name: Locate Terraform plan files
+        if: always()
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Plan files in repository:"
+          find . -type f \( -name "tfplan" -o -name "tfplan.txt" \) -print
+          echo "Plan step output must be checked above."
+
       - name: Upload deployment plan
         uses: actions/upload-artifact@v4
         with:
