@@ -1,10 +1,15 @@
-resource "aws_s3_bucket" "traform_main"{
-bucket= "tf-website-learner-16e6b602c04c23b0e55d892e6f"
+terraform {
+  backend "s3" {
+    bucket       = "tf-website-learner-16e6b602c04c23b0e55d892e6f"
+    key          = "vpc-project/terraform.tfstate"
+    region       = "ap-south-1"
+    use_lockfile = true
+  }
 }
 
-backend "s3"{
-bucket="tf-website-learner-16e6b602c04c23b0e55d892e6f"
-key="main/terraform.tfstate"
+
+resource "aws_s3_bucket" "traform_main"{
+bucket= "tf-website-learner-16e6b602c04c23b0e55d892e6f"
 }
 
 resource "aws_vpc" "main" {
