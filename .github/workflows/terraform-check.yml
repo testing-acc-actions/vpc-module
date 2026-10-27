@@ -37,3 +37,6 @@ jobs:
         
       - name: plan terraform configuration
         run: terraform plan
+
+      - name: applying terraform configuration
+        run: terraform apply 
