@@ -35,8 +35,18 @@ jobs:
       - name: Validate Terraform configuration
         run: terraform validate
         
-      - name: plan terraform configuration
-        run: terraform plan
+      - name: Generate saved Terraform plan
+        run: terraform plan -input=false -no-color -out=tfplan
 
-      - name: applying terraform configuration
-        run: terraform apply 
+      - name: Create readable plan report
+        run: terraform show -no-color tfplan > tfplan.txt
+
+      - name: Upload Terraform plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: |
+            tfplan
+            tfplan.txt
+          retention-days: 5
+          if-no-files-found: error
