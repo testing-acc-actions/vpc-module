@@ -28,7 +28,7 @@ jobs:
           terraform_version: "1.12.2"
 
       - name: Check formatting
-        run: terraform fmt
+        run: terraform fmt -check -recursive
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -37,24 +37,23 @@ jobs:
           aws-region: ap-south-1
 
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Validate Terraform
         run: terraform validate
 
       - name: Create saved plan
-        run: terraform plan 
-      - name: Create readable report
-        run: terraform show 
+        run: terraform plan -input=false -no-color -out=tfplan
 
-      - name: Locate Terraform plan files
-        if: always()
+      - name: Create readable report
+        run: terraform show -no-color tfplan > tfplan.txt
+
+      - name: Verify plan files
         run: |
           echo "Current directory:"
           pwd
-          echo "Plan files in repository:"
-          find . -type f \( -name "tfplan" -o -name "tfplan.txt" \) -print
-          echo "Plan step output must be checked above."
+          echo "Saved plan and readable report:"
+          ls -lh tfplan tfplan.txt
 
       - name: Upload deployment plan
         uses: actions/upload-artifact@v4
@@ -87,6 +86,13 @@ jobs:
           name: production-tfplan
           path: .
 
+      - name: Verify downloaded plan
+        run: |
+          echo "Downloaded files:"
+          ls -lh tfplan tfplan.txt
+          echo "Readable plan report:"
+          cat tfplan.txt
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -98,8 +104,3 @@ jobs:
 
       - name: Apply saved plan
         run: terraform apply -input=false tfplan
-
-      - name: Verify plan files
-        run: |
-          pwd
-          ls -l tfplan tfplan.txt
