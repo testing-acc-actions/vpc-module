@@ -28,7 +28,7 @@ jobs:
           terraform_version: "1.12.2"
 
       - name: Check formatting
-        run: terraform fmt -check -recursive
+        run: terraform fmt
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -37,16 +37,15 @@ jobs:
           aws-region: ap-south-1
 
       - name: Initialize Terraform
-        run: terraform init -input=false
+        run: terraform init
 
       - name: Validate Terraform
         run: terraform validate
 
       - name: Create saved plan
-        run: terraform plan -input=false -no-color -out=tfplan
-
+        run: terraform plan 
       - name: Create readable report
-        run: terraform show -no-color tfplan > tfplan.txt
+        run: terraform show 
 
       - name: Upload deployment plan
         uses: actions/upload-artifact@v4
