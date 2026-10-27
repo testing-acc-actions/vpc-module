@@ -8,10 +8,6 @@ terraform {
 }
 
 
-resource "aws_s3_bucket" "traform_main"{
-bucket= "tf-website-learner-16e6b602c04c23b0e55d892e6f"
-}
-
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
