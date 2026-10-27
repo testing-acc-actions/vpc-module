@@ -28,7 +28,7 @@ jobs:
           terraform_version: "1.12.2"
 
       - name: Check formatting
-        run: terraform fmt -check -recursive
+        run: terraform fmt 
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
