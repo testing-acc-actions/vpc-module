@@ -89,3 +89,8 @@ jobs:
 
       - name: Apply saved plan
         run: terraform apply -input=false tfplan
+
+      - name: Verify plan files
+        run: |
+          pwd
+          ls -l tfplan tfplan.txt
