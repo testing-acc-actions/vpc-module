@@ -1,0 +1,92 @@
+
+name: Terraform Production Deployment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+
+concurrency:
+  group: terraform-production
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Create deployment plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::466210119847:role/vpc-main
+          aws-region: ap-south-1
+
+      - name: Initialize Terraform
+        run: terraform init -input=false
+
+      - name: Validate Terraform
+        run: terraform validate
+
+      - name: Create saved plan
+        run: terraform plan -input=false -no-color -out=tfplan
+
+      - name: Create readable report
+        run: terraform show -no-color tfplan > tfplan.txt
+
+      - name: Upload deployment plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-tfplan
+          path: |
+            tfplan
+            tfplan.txt
+          retention-days: 1
+          if-no-files-found: error
+
+  apply:
+    name: Apply approved plan
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout same commit
+        uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+
+      - name: Download saved plan
+        uses: actions/download-artifact@v4
+        with:
+          name: production-tfplan
+          path: .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::466210119847:role/vpc-main
+          aws-region: ap-south-1
+
+      - name: Initialize Terraform
+        run: terraform init -input=false
+
+      - name: Apply saved plan
+        run: terraform apply -input=false tfplan
